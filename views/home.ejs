@@ -1,0 +1,143 @@
+<%- include ('header') %>
+
+<style>
+    body{
+        background: rgb(51, 41, 75);
+        color: aliceblue;
+        font-family: 'Prompt', sans-serif;
+    }
+    section {
+        max-width: 1200px;
+        display: block;
+        margin: auto;
+    }
+    form {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    input {
+        width: 100%;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        border: none;
+    }
+</style>
+
+<div id="paypal"></div>
+
+<section>
+    <form action="/add-online" method="post">
+        Name: <br>
+        <input type="text" name="name" required><br>
+        Email:<br>
+        <input type="email" name="email" required><br>
+        Website:<br>
+        <input type="url" name="website" required><br>
+        Country:<br>
+        <input type="text" name="country" required><br>
+        Logo:<br>
+        <small>Logo must be 200x200px .png</small><br>
+        <img src="" id="img64" alt="">
+        <input type="file" onchange="encodeImageFileAsURL(this)" />
+        <input hidden type="text" name="logoBase64" id="base64" value="" />
+        <br><br>
+        <input type="submit" value="Submit" required/>
+    </form>
+</section>
+
+<script>
+    function encodeImageFileAsURL(element) {
+  var file = element.files[0];
+  var reader = new FileReader();
+  reader.onloadend = function() {
+    console.log('RESULT', reader.result)
+    let e = document.getElementById("base64");
+    e.value = reader.result
+    let i = document.getElementById("img64");
+    i.src = reader.result
+  }
+  reader.readAsDataURL(file);
+}
+
+</script>
+
+<!-- //////////////////////////// directory listing ///////////////////////////////// -->
+<style>
+    a {
+        display: inline-block;
+        text-decoration: none;
+        color: inherit;
+        border-radius: 10px;
+    }
+    a:hover {
+        /* outline: rgba(0, 0, 0, 0.07) 2px solid; */
+        box-shadow:
+  0 0px 0.1px rgba(0, 0, 0, 0.281),
+  0 0px 0.1px rgba(0, 0, 0, 0.404),
+  0 0px 0.3px rgba(0, 0, 0, 0.5),
+  0 0px 0.4px rgba(0, 0, 0, 0.596),
+  0 0px 0.8px rgba(0, 0, 0, 0.719),
+  0 0px 2px rgba(0, 0, 0, 1)
+;
+
+
+
+    }
+    img {
+        display: inline-block;
+        max-width: 200px;
+        max-height: 200px;
+        margin: auto;
+        border-radius: 10px;
+    }
+    td{
+        font-size: 1.5em;
+        padding: 10px;
+        height: 200px;
+        min-width: 200px;
+    }
+</style>
+
+<%
+let countries = [];
+online.forEach(e => {
+    if(!countries.includes(e.country)) {
+        countries.push(e.country)
+    }
+})
+
+countries.sort()
+
+console.log(countries)
+
+%>
+
+<section>
+    <% countries.forEach(c => { %>
+        <h1><%= c %></h1>
+        <% online.forEach(e => { %> 
+        <% if(e.country == c) { %> 
+            <a target="_blank" href="<%= e.website %>">
+            <table>
+                <tr>
+                    <td><img src="<%= e.logoBase64 %>"></td>
+                    <td><%= e.name %></td>
+                </tr>
+            </table>
+        </a>
+    <br>
+            
+        <% } %>
+        <% }) %>
+
+    <% }) %>
+
+
+   
+</section>
+
+
+
+<%- include ('footer') %>
